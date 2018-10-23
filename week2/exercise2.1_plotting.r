@@ -23,28 +23,28 @@ y <- dat1.matrix[,ncol(dat1.matrix)]
 # gradient descent function
 #############################################
 output <- double()
-grad_des <- function(init_theta, maxinter,convthre) {
+grad_des <- function(init_theta, num_inter,crit) {
   theta <- init_theta
   thetam <- theta
   i <- 1
-  while (i <= maxinter) {
+  while (i <= num_inter) {
     H <- dat2.matrix %*% theta
     result <- cost(H, y, theta)
     print(result)
     output <- c(output,result)
     if (i >=2) {
-       if (output[[i-1]] - output[[i]] <= convthre) {
-          break
-       } else {
-         theta <- theta - t(alpha * crossprod(H-y,dat2.matrix)/length(y))
-         i <- i + 1
-       }
+      if (output[[i-1]] - output[[i]] <= crit) {
+        break
+      } else {
+        theta <- theta - t(alpha * crossprod(H-y,dat2.matrix)/length(y))
+        i <- i + 1
+      }
     } else if (i == 1) {
       theta <- theta - t(alpha * crossprod(H-y,dat2.matrix)/length(y))
       i <- i + 1
     }
     thetam <- cbind(thetam,theta)
-   if (i > maxinter) {
+    if (i > num_inter) {
       print('Max number of interation reached: not converge')
       break
     } 
@@ -53,7 +53,7 @@ grad_des <- function(init_theta, maxinter,convthre) {
 }
 
 # calculate the theta where the cost function achieve the minimum
-costval <- grad_des(init_theta = theta,maxinter = 500,convthre=0.01)
+costval <- grad_des(init_theta = theta,num_inter = 500, crit=0.01)
 costval
 
 # surface plot
@@ -65,10 +65,10 @@ axis2 <- seq(-3,3,by=0.1)
 sur_cost <- double()
 for (theta0 in axis1) {
   for (theta1 in axis2) {
-       theta <- matrix(c(theta0,theta1),nrow=2)
-       H <- dat2.matrix %*% theta
-       result <- cost(H, y, theta)
-       sur_cost <- c(sur_cost,result)
+    theta <- matrix(c(theta0,theta1),nrow=2)
+    H <- dat2.matrix %*% theta
+    result <- cost(H, y, theta)
+    sur_cost <- c(sur_cost,result)
   }
 }
 
@@ -82,10 +82,10 @@ for (theta0 in axis1) {
 
 z <- matrix(sur_cost,nrow=61)
 plot_ly() %>% add_surface(x = ~axis1, y = ~axis2, z = ~z) %>%
-layout(
-  title = "Cost in a 3d surface plot",
-  scene = list(
-    xaxis = list(title = "Theta0"),
-    yaxis = list(title = "Theta1"),
-    zaxis = list(title = "Cost")
-  ))
+  layout(
+    title = "Cost in a 3d surface plot",
+    scene = list(
+      xaxis = list(title = "Theta0"),
+      yaxis = list(title = "Theta1"),
+      zaxis = list(title = "Cost")
+    ))
